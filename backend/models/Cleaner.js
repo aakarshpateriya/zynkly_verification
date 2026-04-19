@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+
 const cleanerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   cleanerId: { type: String, unique: true },

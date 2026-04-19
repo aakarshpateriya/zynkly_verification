@@ -1,6 +1,7 @@
 const Cleaner = require("../models/Cleaner");
 const generateToken = require("../utils/token");
 const QRCode = require("qrcode");
+const Scan = require("../models/Scan");
 
 // ➕ Add Cleaner
 exports.addCleaner = async (req, res) => {
@@ -42,7 +43,7 @@ exports.getCleaners = async (req, res) => {
   }
 };
 
-// 🔄 Toggle Active Status
+// 🔄 Toggle Cleaner Status
 exports.toggleCleaner = async (req, res) => {
   try {
     const cleaner = await Cleaner.findById(req.params.id);
@@ -56,6 +57,16 @@ exports.toggleCleaner = async (req, res) => {
 
     res.json(cleaner);
 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// 📊 Get Scan Logs
+exports.getScans = async (req, res) => {
+  try {
+    const scans = await Scan.find().sort({ scannedAt: -1 });
+    res.json(scans);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -3,19 +3,23 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 
 const Cleaner = require("../models/Cleaner");
+const Scan = require("../models/Scan");
+const auth = require("../middleware/auth");
 
 const {
   addCleaner,
   getCleaners,
-  toggleCleaner
+  toggleCleaner,
+  getScans
 } = require("../controllers/cleanerController");
 
-// 🧑‍💼 ADMIN ROUTES (FIRST)
-router.post("/add", addCleaner);
-router.get("/all", getCleaners);
-router.put("/toggle/:id", toggleCleaner);
+// 🧑‍💼 ADMIN ROUTES
+router.post("/add", auth, addCleaner);
+router.get("/all", auth, getCleaners);
+router.put("/toggle/:id", auth, toggleCleaner);
+router.get("/scans", auth, getScans);
 
-// 🔐 VERIFY ROUTE (LAST)
+// 🔐 VERIFY ROUTE (MUST BE LAST)
 router.get("/:token", async (req, res) => {
   try {
     const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET);
@@ -27,6 +31,13 @@ router.get("/:token", async (req, res) => {
     if (!cleaner) {
       return res.json({ verified: false });
     }
+
+    // 📊 LOG SCAN
+    await Scan.create({
+      cleanerId: cleaner.cleanerId,
+      ip: req.ip,
+      userAgent: req.headers["user-agent"]
+    });
 
     res.json({
       verified: cleaner.isActive,
