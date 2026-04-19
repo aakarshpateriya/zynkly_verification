@@ -1,11 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Verify from "./Verify";
+import Verify from "./pages/Verify";
+import Admin from "./pages/Admin";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/verify/:id" element={<Verify />} />
+        <Route path="/verify/:token" element={<Verify />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </BrowserRouter>
   );
